@@ -31,6 +31,7 @@
                                                     {{ $cliente->nombre }} - {{ $cliente->documento }} ({{ $cliente->telefono }})
                                                 </option>
                                             @endforeach
+                                            
                                         </select>
                                         <div class="invalid-feedback">Por favor seleccione un cliente</div>
                                     </div>
@@ -46,7 +47,7 @@
                                     <div class="col-md-3">
                                         <div class="bg-light p-2 rounded">
                                             <small class="text-muted d-block">Documento</small>
-                                            <span id="clienteDocumento" class="fw-bold"></span>
+                                            <span id="clienteDocumento" class="fw-bold clienteM"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -325,7 +326,7 @@
                 <div class="col-md-12">
                     <label class="form-label">Fotos del Equipo</label>
                     <input type="file" class="form-control" name="equipos[__INDEX__][fotos][]" multiple accept="image/jpeg,image/png,image/jpg,image/gif">
-                    <div class="form-text">Puede seleccionar hasta 5 fotos (JPEG, PNG, JPG, GIF) - Máx. 2MB cada una</div>
+                    <div class="form-text">Puede seleccionar hasta 5 fotos (JPEG, PNG, JPG, GIF) - Máx. 8MB cada una</div>
                     <div class="fotos-preview d-flex flex-wrap gap-2 mt-2"></div>
                 </div>
             </div>
@@ -339,6 +340,12 @@
     .container-lg {
         max-width: 1200px;
     }
+
+    .clienteM {
+    display: block !important;
+    }
+
+
     .card {
         border-radius: 0.5rem;
     }
@@ -387,12 +394,14 @@ $(document).ready(function() {
         const clienteId = $(this).val();
         if (clienteId) {
             $.get(`/clientes/${clienteId}`, function(cliente) {
+                
                 $('#clienteInfo').show();
-                $('#clienteDocumento').text(cliente.documento || 'N/A');
-                $('#clienteTelefono').text(cliente.telefono || 'N/A');
-                $('#clienteEmail').text(cliente.email || 'N/A');
-                $('#clienteDireccion').text(cliente.direccion || 'N/A');
-            }).fail(function() {
+                $('#clienteDocumento').html(cliente.documento || 'N/A');
+                $('#clienteTelefono').html(cliente.telefono || 'N/A');
+                $('#clienteEmail').html(cliente.email || 'N/A');
+                $('#clienteDireccion').html(cliente.direccion || 'N/A');
+            }).fail(function(xhr, status, error) {
+                
                 toastr.error('Error al cargar información del cliente');
             });
         } else {
@@ -437,8 +446,8 @@ $(document).ready(function() {
                 return;
             }
             
-            if (file.size > 2 * 1024 * 1024) {
-                toastr.error(`La imagen ${file.name} supera el límite de 2MB`);
+            if (file.size > 4 * 1024 * 1024) {
+                toastr.error(`La imagen ${file.name} supera el límite de 8MB`);
                 return;
             }
             

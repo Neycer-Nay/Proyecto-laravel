@@ -10,7 +10,7 @@ class ClienteController extends Controller
 {
     public function index()
     {
-        return view('modules.clientes.index');
+        
         $clientes = Cliente::latest()->paginate(10);
         return view('modules.recepcion.create', compact('clientes'));
     }
@@ -48,7 +48,8 @@ class ClienteController extends Controller
     public function show(Cliente $cliente)
     {
         
-        return response()->json($cliente);
+        $clientes = Cliente::all();
+    return response()->json($clientes);
     }
 
 
