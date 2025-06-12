@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ordenes_trabajo', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recepciones_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tecnico_id')->constrained('users')->onDelete('restrict');
+            $table->foreignId('tecnico_id')->constrained('users')->onDelete('cascade');
             $table->date('fecha_inicio');
             $table->date('fecha_fin')->nullable();
             $table->enum('estado', ['Pendiente', 'En proceso', 'Finalizado'])->default('Pendiente');

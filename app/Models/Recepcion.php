@@ -53,4 +53,9 @@ class Recepcion extends Model
     {
         return $this->hasMany(Equipo::class, 'recepciones_id');
     }
+    public function fotos()
+    {
+        return $this->hasMany(Foto::class);
+    }
+    
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('repuestos_usados', function (Blueprint $table) {
             $table->id();
             $table->foreignId('orden_trabajo_id')->constrained('ordenes_trabajo')->onDelete('cascade');
-            $table->foreignId('producto_id')->constrained()->onDelete('restrict');
+            $table->foreignId('producto_id')->constrained()->onDelete('cascade');
             $table->integer('cantidad');
             $table->decimal('costo_unitario', 10, 2);
         });

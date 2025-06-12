@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('numero_recepcion', 20)->unique();
             $table->date('fecha_recepcion');
             $table->time('hora_ingreso');
-            $table->foreignId('cliente_id')->constrained()->onDelete('restrict');
-            $table->foreignId('users_id')->constrained('users')->onDelete('restrict');
+            $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
+            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
             $table->string('procedente', 100)->nullable();
             $table->decimal('presupuesto_inicial', 10, 2)->nullable();
             $table->boolean('registro_fotografico')->default(false);

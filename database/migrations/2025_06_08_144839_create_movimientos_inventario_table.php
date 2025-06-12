@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('movimientos_inventario', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('producto_id')->constrained()->onDelete('restrict');
+            $table->foreignId('producto_id')->constrained()->onDelete('cascade');
             $table->enum('tipo', ['entrada', 'salida']);
             $table->integer('cantidad');
             $table->text('motivo')->nullable();
-            $table->foreignId('usuario_id')->constrained('users')->onDelete('restrict');
+            $table->foreignId('usuario_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

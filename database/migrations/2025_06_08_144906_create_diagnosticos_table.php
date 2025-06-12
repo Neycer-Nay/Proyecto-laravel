@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('diagnosticos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recepciones_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tecnico_id')->constrained('users')->onDelete('restrict');
+            $table->foreignId('tecnico_id')->constrained('users')->onDelete('cascade');
             $table->text('descripcion');
             $table->text('recomendaciones')->nullable();
             $table->decimal('costo_estimado', 10, 2)->nullable();

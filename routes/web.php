@@ -10,9 +10,8 @@ use App\Http\Controllers\Usuarios;
 use App\Http\Controllers\Inventario;
 use App\Http\Controllers\Reportes;
 use App\Http\Controllers\Cotizaciones;
-use App\Http\Controllers\ClientesController;
 use App\Http\Controllers\RecepcionController;
-
+use App\Http\Controllers\ClienteController;    
 
 
 // Crear un usuario administrador, solo usar una vez
@@ -28,19 +27,17 @@ Route::middleware("auth")->group(function () {
 });
 
 
-Route::resource('recepciones', RecepcionController::class)->except(['edit', 'update']);
-Route::post('/', [RecepcionController::class, 'store'])->name('recepciones.store');
-Route::resource('clientes', \App\Http\Controllers\ClienteController::class);
 
 Route::prefix('clientes')->middleware('auth')->group(function () {
-    Route::get('/', [ClientesController::class, 'index'])->name('clientes.index');
-    Route::get('/create', [ClientesController::class, 'create'])->name('clientes.create');
-    Route::post('/', [ClientesController::class, 'store'])->name('clientes.store');
-    Route::get('/{id}', [ClientesController::class, 'show'])->name('clientes.show');
-    Route::get('/{id}/edit', [ClientesController::class, 'edit'])->name('clientes.edit');
-    Route::put('/{id}', [ClientesController::class, 'update'])->name('clientes.update');
-    Route::delete('/{id}', [ClientesController::class, 'destroy'])->name('clientes.destroy');
+    Route::get('/', [ClienteController::class, 'index'])->name('clientes.index');
+    Route::get('/create', [ClienteController::class, 'create'])->name('clientes.create');
+    Route::post('/', [ClienteController::class, 'store'])->name('clientes.store');
+    Route::get('/{id}', [ClienteController::class, 'show'])->name('clientes.show');
+    Route::get('/{id}/edit', [ClienteController::class, 'edit'])->name('clientes.edit');
+    Route::put('/{id}', [ClienteController::class, 'update'])->name('clientes.update');
+    Route::delete('/{id}', [ClienteController::class, 'destroy'])->name('clientes.destroy');
 });
+
 Route::prefix('recepciones')->middleware('auth')->group(function () {
     Route::get('/', [RecepcionController::class, 'index'])->name('recepciones.index');
     Route::get('/create', [RecepcionController::class, 'create'])->name('recepciones.create');
@@ -49,6 +46,8 @@ Route::prefix('recepciones')->middleware('auth')->group(function () {
     Route::get('/{id}/edit', [RecepcionController::class, 'edit'])->name('recepciones.edit');
     Route::put('/{id}', [RecepcionController::class, 'update'])->name('recepciones.update');
     Route::delete('/{id}', [RecepcionController::class, 'destroy'])->name('recepciones.destroy');
+    Route::get('/{recepcion}/pdf', [RecepcionController::class, 'generarPDF'])->name('recepciones.pdf');
+
 });
 
 

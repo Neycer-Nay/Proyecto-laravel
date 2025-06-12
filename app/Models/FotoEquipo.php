@@ -10,6 +10,8 @@ class FotoEquipo extends Model
 {
     use HasFactory;
 
+    protected $table = 'fotos_equipos';
+
     protected $fillable = [
         'equipo_id',
         'ruta',
@@ -19,6 +21,10 @@ class FotoEquipo extends Model
     public function equipo()
     {
         return $this->belongsTo(Equipo::class);
+    }
+    public function recepcion()
+    {
+        return $this->belongsTo(Recepcion::class);
     }
 
     

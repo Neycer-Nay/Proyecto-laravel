@@ -57,7 +57,7 @@ class RecepcionController extends Controller
                 'nullable',
                 'image',
                 'mimes:jpeg,png,jpg,gif',
-                'max:2048' // 2MB
+                'max:10240' // 10MB
                 ],
                 
             ], [
@@ -160,5 +160,16 @@ class RecepcionController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Generar  PDF de la recepción.
+     */
+    public function generarPDF(Recepcion $recepcion)
+    {
+        $recepcion->load(['cliente', 'encargado', 'equipos.fotos']);
+
+        $pdf = Pdf::loadView('modules.recepcion.pdf', compact('recepcion'));
+        return $pdf->download('recepcion_'.$recepcion->numero_recepcion.'.pdf');
     }
 }

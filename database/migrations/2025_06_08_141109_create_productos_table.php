@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->text('descripcion')->nullable();
-            $table->foreignId('categoria_id')->constrained()->onDelete('restrict');
+            $table->foreignId('categoria_id')->constrained()->onDelete('cascade');
             $table->integer('stock')->default(0);
             $table->decimal('precio', 10, 2);
             $table->timestamps();
