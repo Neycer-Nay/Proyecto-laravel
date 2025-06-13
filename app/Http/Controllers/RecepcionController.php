@@ -127,20 +127,23 @@ class RecepcionController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Recepción registrada correctamente',
-                'redirect' => route('recepciones.show', $recepcion->id)
-            ]);
+            return redirect()->route('recepciones.index')
+                         ->with('toastr', [
+                             'type' => 'success', 
+                             'message' => 'Recepción creada exitosamente',
+                             'title' => 'Éxito'
+                         ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
             
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al guardar la recepción: ' . $e->getMessage(),
-                'error' => $e->getTraceAsString()
-            ], 500);
+            return redirect()->back()
+                         ->withInput()
+                         ->with('toastr', [
+                             'type' => 'error',
+                             'message' => 'Error al crear recepción: ' . $e->getMessage(),
+                             'title' => 'Error'
+                         ]);
         }
     }
 

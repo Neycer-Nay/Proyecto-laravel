@@ -38,11 +38,9 @@ class ClienteController extends Controller
 
         $cliente = Cliente::create($request->all());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Cliente registrado exitosamente',
-            'cliente' => $cliente
-        ]);
+        return redirect()->route('recepciones.create')
+                     ->with('success', 'Cliente creado exitosamente')
+                     ->with('selectedCliente', $cliente->id);
     }
 
     public function show(Cliente $cliente)
