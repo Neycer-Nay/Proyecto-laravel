@@ -3,6 +3,7 @@
 @section('titulo', '$titulo')
 
 @section('contenido')
+<main id="main" class="main">
 <div class="container">
     <h1>Administración de Usuarios</h1>
     
@@ -70,4 +71,5 @@
         {{ $users->links() }}
     </div>
 </div>
+</main>
 @endsection
