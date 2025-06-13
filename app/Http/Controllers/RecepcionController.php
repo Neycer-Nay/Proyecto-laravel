@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Support\Facades\DB;
 use App\Models\Recepcion;
 use App\Models\Cliente;
@@ -20,7 +19,6 @@ class RecepcionController extends Controller
         $titulo = 'Administrar Recepciones';
         $recepciones = Recepcion::with(['cliente', 'encargado'])->latest()->paginate(10);
         return view('modules.recepcion.index', compact('titulo', 'recepciones'));
-
     }
 
     public function create()
@@ -52,13 +50,17 @@ class RecepcionController extends Controller
                 'equipos.*.estado' => 'nullable|string|max:100',
                 'equipos.*.costo_estimado' => 'nullable|numeric',
                 
-
+                // Fotos subidas tradicionalmente
                 'equipos.*.fotos.*' => [
-                'nullable',
-                'image',
-                'mimes:jpeg,png,jpg,gif',
-                'max:10240' // 10MB
+                    'nullable',
+                    'image',
+                    'mimes:jpeg,png,jpg,gif',
+                    'max:10240' // 10MB
                 ],
+                
+                // Fotos capturadas desde cámara (como base64)
+                'equipos.*.captured_photos' => 'nullable|string',
+                'equipos.*.captured_photos.*' => 'nullable|string',
                 
             ], [
                 'equipos.*.nombre.required' => 'El campo nombre es requerido para todos los equipos',
@@ -67,6 +69,7 @@ class RecepcionController extends Controller
                 'equipos.required' => 'Debe agregar al menos un equipo',
                 'equipos.min' => 'Debe agregar al menos un equipo'
             ]);
+
             // Crear la recepción
             $recepcion = Recepcion::create([
                 'numero_recepcion' => $validated['numero_recepcion'],
@@ -100,26 +103,34 @@ class RecepcionController extends Controller
                     'costo_estimado' => $equipoData['costo_estimado'] ?? null
                 ]);
 
-                // Guardar fotos si existen
+                // Procesar fotos subidas tradicionalmente
                 $fotos = $request->file("equipos.$index.fotos") ?? [];
-
                 foreach ($fotos as $foto) {
                     if ($foto && $foto->isValid()) {
-                        $path = $foto->store('public/equipos');
-                        $equipo->fotos()->create([
-                            'ruta' => Storage::url($path),
-                            'descripcion' => 'Foto del equipo ' . $equipoData['nombre']
-                        ]);
+                        $this->guardarFoto($equipo, $foto);
                     }
                 }
 
+                // Procesar fotos capturadas desde cámara (base64)
+                if (!empty($equipoData['captured_photos'])) {
+                    $fotosCapturadas = is_array($equipoData['captured_photos']) 
+                        ? $equipoData['captured_photos'] 
+                        : json_decode($equipoData['captured_photos'], true);
+                    
+                    if (is_array($fotosCapturadas)) {
+                        foreach ($fotosCapturadas as $fotoBase64) {
+                            $this->guardarFotoBase64($equipo, $fotoBase64);
+                        }
+                    }
+                }
             }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Recepción registrada correctamente'
+                'message' => 'Recepción registrada correctamente',
+                'redirect' => route('recepciones.show', $recepcion->id)
             ]);
 
         } catch (\Exception $e) {
@@ -127,9 +138,61 @@ class RecepcionController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => 'Error al guardar la recepción: ' . $e->getMessage()
+                'message' => 'Error al guardar la recepción: ' . $e->getMessage(),
+                'error' => $e->getTraceAsString()
             ], 500);
         }
+    }
+
+    /**
+     * Guarda una foto subida tradicionalmente (archivo)
+     */
+    protected function guardarFoto(Equipo $equipo, $foto)
+    {
+        $path = $foto->store('public/equipos');
+        $equipo->fotos()->create([
+            'ruta' => Storage::url($path),
+            'descripcion' => 'Foto del equipo ' . $equipo->nombre,
+            'tipo' => 'uploaded'
+        ]);
+    }
+
+    /**
+     * Guarda una foto capturada desde cámara (base64)
+     */
+    protected function guardarFotoBase64(Equipo $equipo, $base64Image)
+    {
+        // Extraer la parte base64 de la cadena
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $imageData = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, gif
+
+            if (!in_array($type, ['jpg', 'jpeg', 'png', 'gif'])) {
+                throw new \Exception('Formato de imagen no válido');
+            }
+
+            $imageData = base64_decode($imageData);
+            
+            if ($imageData === false) {
+                throw new \Exception('Error al decodificar la imagen base64');
+            }
+        } else {
+            throw new \Exception('Formato de datos de imagen no válido');
+        }
+
+        // Generar nombre único para el archivo
+        $filename = 'equipos/' . Str::uuid() . '.' . $type;
+        $storagePath = 'public/' . $filename;
+
+        // Guardar en storage
+        Storage::put($storagePath, $imageData);
+
+        // Guardar en base de datos
+        $equipo->fotos()->create([
+            'ruta' => Storage::url($storagePath),
+            'descripcion' => 'Foto del equipo ' . $equipo->nombre,
+            'tipo' => 'captured'
+        ]);
     }
 
     public function show(Recepcion $recepcion)
@@ -138,33 +201,6 @@ class RecepcionController extends Controller
         return view('modules.recepcion.show', compact('recepcion'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    /**
-     * Generar  PDF de la recepción.
-     */
     public function generarPDF(Recepcion $recepcion)
     {
         $recepcion->load(['cliente', 'encargado', 'equipos.fotos']);

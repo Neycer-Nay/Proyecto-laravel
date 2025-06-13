@@ -28,7 +28,7 @@
                         <th>N° Recepción</th>
                         <th>Fecha</th>
                         <th>Cliente</th>
-                        <th>Encargado</th>
+                        <th>Usuario</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -40,7 +40,7 @@
                             <td>{{ $recepcion->numero_recepcion }}</td>
                             <td>{{ $recepcion->fecha_recepcion }}</td>
                             <td>{{ $recepcion->cliente->nombre ?? 'Sin cliente' }}</td>
-                            <td>{{ $recepcion->encargado->name ?? 'Sin encargado' }}</td>
+                            <td>{{ $recepcion->encargado->rol ?? 'Sin encargado' }}</td>
                             <td>
                                 <span class="badge bg-{{ $recepcion->estado === 'recibido' ? 'primary' : 'secondary' }}">
                                     {{ ucfirst($recepcion->estado) }}

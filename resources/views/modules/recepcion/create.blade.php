@@ -324,10 +324,36 @@
                 </div>
                 
                 <div class="col-md-12">
-                    <label class="form-label">Fotos del Equipo</label>
-                    <input type="file" class="form-control" name="equipos[__INDEX__][fotos][]" multiple accept="image/jpeg,image/png,image/jpg,image/gif">
-                    <div class="form-text">Puede seleccionar hasta 5 fotos (JPEG, PNG, JPG, GIF) - Máx. 8MB cada una</div>
-                    <div class="fotos-preview d-flex flex-wrap gap-2 mt-2"></div>
+                <label class="form-label">Fotos del Equipo</label>
+                
+                <!-- Opción tradicional de subir archivos -->
+                <input type="file" class="form-control" name="equipos[__INDEX__][fotos][]" multiple 
+                       accept="image/jpeg,image/png,image/jpg,image/gif" id="file-upload-__INDEX__">
+                <div class="form-text">Puede seleccionar hasta 5 fotos (JPEG, PNG, JPG, GIF) - Máx. 8MB cada una</div>
+                
+                <!-- Opción para capturar desde cámara -->
+                <div class="mt-2">
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="start-camera-__INDEX__">
+                        <i class="bi bi-camera me-1"></i> Tomar Foto con Cámara
+                    </button>
+                    
+                    <div class="camera-container mt-2" id="camera-container-__INDEX__" style="display:none;">
+                        <div class="d-flex gap-2">
+                            <video id="video-__INDEX__" width="320" height="240" autoplay class="rounded"></video>
+                            <canvas id="canvas-__INDEX__" width="320" height="240" style="display:none;"></canvas>
+                        </div>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-primary btn-sm" id="take-photo-__INDEX__">
+                                <i class="bi bi-camera-fill me-1"></i> Capturar
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm" id="retake-photo-__INDEX__" style="display:none;">
+                                <i class="bi bi-arrow-repeat me-1"></i> Volver a Tomar
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm" id="add-photo-__INDEX__" style="display:none;">
+                                <i class="bi bi-plus-circle me-1"></i> Agregar Foto
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -394,14 +420,12 @@ $(document).ready(function() {
         const clienteId = $(this).val();
         if (clienteId) {
             $.get(`/clientes/${clienteId}`, function(cliente) {
-                
                 $('#clienteInfo').show();
                 $('#clienteDocumento').html(cliente.documento || 'N/A');
                 $('#clienteTelefono').html(cliente.telefono || 'N/A');
                 $('#clienteEmail').html(cliente.email || 'N/A');
                 $('#clienteDireccion').html(cliente.direccion || 'N/A');
             }).fail(function(xhr, status, error) {
-                
                 toastr.error('Error al cargar información del cliente');
             });
         } else {
@@ -422,12 +446,159 @@ $(document).ready(function() {
                 const currentName = $(this).attr('name');
                 const newName = currentName.replace(/equipos\[\d+\]/, `equipos[${index}]`);
                 $(this).attr('name', newName);
+                $(this).attr('id', newName.replace(/\[|\]/g, '_'));
+            });
+            
+            // Actualizar IDs de elementos de cámara
+            $(this).find('[id^="video-"], [id^="canvas-"], [id^="start-camera-"], [id^="take-photo-"], [id^="retake-photo-"], [id^="add-photo-"], [id^="camera-container-"], [id^="file-upload-"]').each(function() {
+                const currentId = $(this).attr('id');
+                const newId = currentId.replace(/-(\d+)$/, `-${index}`);
+                $(this).attr('id', newId);
             });
         });
         equipoCount = $('.equipo-item').length;
     }
 
-    // Vista previa de imágenes
+    // Función para configurar la cámara para un equipo específico
+    function setupCamera(index) {
+        const video = $(`#video-${index}`)[0];
+        const canvas = $(`#canvas-${index}`)[0];
+        const startCamera = $(`#start-camera-${index}`)[0];
+        const takePhoto = $(`#take-photo-${index}`)[0];
+        const retakePhoto = $(`#retake-photo-${index}`)[0];
+        const addPhoto = $(`#add-photo-${index}`)[0];
+        const cameraContainer = $(`#camera-container-${index}`)[0];
+        const fileUpload = $(`#file-upload-${index}`)[0];
+        const previewContainer = $(`#file-upload-${index}`).closest('.col-md-12').find('.fotos-preview');
+        
+        let stream = null;
+        let capturedPhotos = [];
+        
+        // Evento para iniciar cámara
+        $(startCamera).on('click', function() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'environment' 
+                    } 
+                }).then(function(mediaStream) {
+                    stream = mediaStream;
+                    video.srcObject = stream;
+                    $(cameraContainer).show();
+                    $(startCamera).hide();
+                    $(takePhoto).show();
+                }).catch(function(error) {
+                    console.error("Error al acceder a la cámara: ", error);
+                    toastr.error('No se pudo acceder a la cámara. Asegúrate de permitir el acceso.');
+                });
+            } else {
+                toastr.error('Tu navegador no soporta la API de medios o no tiene cámara.');
+            }
+        });
+        
+        // Evento para tomar foto (VERSIÓN CORREGIDA)
+        $(takePhoto).on('click', function() {
+            // Asegurarse que el video está listo
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                
+                // Dibujar la imagen del video en el canvas
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                $(video).hide();
+                $(canvas).show();
+                $(takePhoto).hide();
+                $(retakePhoto).show();
+                $(addPhoto).show();
+                
+                // Pausar el stream de video
+                if (stream) {
+                    stream.getVideoTracks()[0].pause();
+                }
+            } else {
+                toastr.error('El video no está listo para capturar. Espera un momento.');
+            }
+        });
+        
+        // Evento para volver a tomar
+        $(retakePhoto).on('click', function() {
+            $(canvas).hide();
+            $(video).show();
+            $(retakePhoto).hide();
+            $(addPhoto).hide();
+            $(takePhoto).show();
+            
+            // Reanudar el stream de video
+            if (stream) {
+                stream.getVideoTracks()[0].resume();
+            }
+        });
+        
+        // Evento para agregar foto
+        $(addPhoto).on('click', function() {
+            if (capturedPhotos.length >= 5) {
+                toastr.warning('Máximo 5 fotos por equipo');
+                return;
+            }
+            
+            // Reducir calidad para no exceder límites de tamaño
+            const imageData = canvas.toDataURL('image/jpeg', 0.7);
+            capturedPhotos.push(imageData);
+            
+            // Mostrar vista previa
+            const photoId = `photo-${index}-${Date.now()}`;
+            previewContainer.append(`
+                <div class="position-relative" style="width: 80px; height: 80px;" data-photo-id="${photoId}">
+                    <img src="${imageData}" class="img-thumbnail h-100 w-100">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 bg-danger rounded-circle p-1" 
+                            style="transform: translate(30%, -30%);" 
+                            onclick="removePhoto('${photoId}', ${index})"></button>
+                </div>
+            `);
+            
+            // Resetear para nueva captura
+            $(retakePhoto).trigger('click');
+            
+            // Actualizar input hidden
+            updateCapturedPhotosInput(index);
+        });
+        
+        // Función para actualizar input hidden
+        function updateCapturedPhotosInput(index) {
+            $(`input[name="equipos[${index}][captured_photos]"]`).remove();
+            if (capturedPhotos.length > 0) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: `equipos[${index}][captured_photos]`,
+                    value: JSON.stringify(capturedPhotos)
+                }).appendTo($(fileUpload).parent());
+            }
+        }
+        
+        // Limpiar al cambiar archivo
+        $(fileUpload).on('change', function() {
+            if (this.files && this.files.length > 0) {
+                capturedPhotos = [];
+                updateCapturedPhotosInput(index);
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                $(cameraContainer).hide();
+                $(startCamera).show();
+                $(takePhoto).hide();
+                $(retakePhoto).hide();
+                $(addPhoto).hide();
+                $(canvas).hide();
+                $(video).show();
+            }
+        });
+    }
+    // Vista previa de imágenes para archivos subidos
     $(document).on('change', 'input[type="file"]', function(e) {
         const container = $(this).closest('.equipo-item').find('.fotos-preview');
         container.empty();
@@ -446,7 +617,7 @@ $(document).ready(function() {
                 return;
             }
             
-            if (file.size > 4 * 1024 * 1024) {
+            if (file.size > 8 * 1024 * 1024) {
                 toastr.error(`La imagen ${file.name} supera el límite de 8MB`);
                 return;
             }
@@ -466,15 +637,56 @@ $(document).ready(function() {
         });
     });
 
+    // Función global para eliminar fotos capturadas
+    window.removePhoto = function(photoId, index) {
+        $(`[data-photo-id="${photoId}"]`).remove();
+        
+        // Encontrar el contenedor del equipo correspondiente
+        const container = $(`#file-upload-${index}`).closest('.col-md-12');
+        const capturedPhotosInput = container.find(`input[name="equipos[${index}][captured_photos]"]`);
+        
+        if (capturedPhotosInput.length) {
+            let photos = JSON.parse(capturedPhotosInput.val());
+            const photoSrc = $(`[data-photo-id="${photoId}"] img`).attr('src');
+            photos = photos.filter(p => p !== photoSrc);
+            
+            if (photos.length > 0) {
+                capturedPhotosInput.val(JSON.stringify(photos));
+            } else {
+                capturedPhotosInput.remove();
+            }
+        }
+    }
+
+    // Función para convertir base64 a Blob
+    window.dataURLtoBlob = function(dataURL) {
+        const parts = dataURL.split(',');
+        const mime = parts[0].match(/:(.*?);/)[1];
+        const byteString = atob(parts[1]);
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        
+        return new Blob([ab], { type: mime });
+    }
+
+    // Agregar nuevo equipo
     $('#addEquipo').click(function() {
         const newEquipo = $($('#equipoTemplate').html().replace(/__INDEX__/g, equipoCount));
         $('#equiposContainer').append(newEquipo);
         reindexEquipos();
         
+        // Configurar cámara para este nuevo equipo
+        setupCamera(equipoCount - 1);
+        
         // Animación para destacar el nuevo equipo
         $('.equipo-item').last().hide().fadeIn(300);
     });
 
+    // Eliminar equipo
     $(document).on('click', '.remove-equipo', function() {
         $(this).closest('.equipo-item').fadeOut(300, function() {
             $(this).remove();
@@ -587,11 +799,12 @@ $(document).ready(function() {
         // Agregar solo los equipos visibles
         $('.equipo-item:visible').each(function(index) {
             // Agregar campos normales
-            $(this).find('input:not([type="file"]), select, textarea').each(function() {
+            $(this).find('input:not([type="file"]):not([type="hidden"]), select, textarea').each(function() {
                 let name = $(this).attr('name');
                 formData.append(name, $(this).val());
             });
             
+            // Agregar archivos subidos
             $(this).find('input[type="file"]').each(function() {
                 const files = this.files;
                 const inputName = $(this).attr('name').replace('__INDEX__', index);
@@ -604,6 +817,16 @@ $(document).ready(function() {
                     formData.append(inputName.replace('[]', `[${i}]`), file);
                 });
             });
+            
+            // Agregar fotos capturadas
+            const capturedPhotosInput = $(this).find('[name^="equipos["][name$="[captured_photos]"]');
+            if (capturedPhotosInput.length) {
+                const photos = JSON.parse(capturedPhotosInput.val());
+                photos.forEach((photo, i) => {
+                    const blob = dataURLtoBlob(photo);
+                    formData.append(`equipos[${index}][captured_photos][${i}]`, blob, `photo_${index}_${i}.jpg`);
+                });
+            }
         });
 
         // Enviar datos via AJAX
