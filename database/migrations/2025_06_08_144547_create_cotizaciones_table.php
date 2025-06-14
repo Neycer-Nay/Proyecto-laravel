@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('cotizaciones', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cliente_id')->constrained()->onDelete('cascade');
+            $table->foreignId('equipo_id')->constrained()->onDelete('cascade');
             $table->date('fecha');
             $table->decimal('total', 10, 2);
             $table->string('estado', 100)->nullable();
