@@ -53,75 +53,75 @@ Route::prefix('recepciones')->middleware('auth')->group(function () {
 
 Route::prefix('ventas')->middleware('auth')->group(function () {
     Route::get('/nueva-venta', [Ventas::class, 'index'])->name('ventas-nuevas');
-    Route::get('/create', [\App\Http\Controllers\Ventas::class, 'create'])->name('ventas.create');
-    Route::post('/', [\App\Http\Controllers\Ventas::class, 'store'])->name('ventas.store');
-    Route::get('/{id}', [\App\Http\Controllers\Ventas::class, 'show'])->name('ventas.show');
-    Route::get('/{id}/edit', [\App\Http\Controllers\Ventas::class, 'edit'])->name('ventas.edit');
-    Route::put('/{id}', [\App\Http\Controllers\Ventas::class, 'update'])->name('ventas.update');
-    Route::delete('/{id}', [\App\Http\Controllers\Ventas::class, 'destroy'])->name('ventas.destroy');
+    Route::get('/create', [Ventas::class, 'create'])->name('ventas.create');
+    Route::post('/', [Ventas::class, 'store'])->name('ventas.store');
+    Route::get('/{id}', [Ventas::class, 'show'])->name('ventas.show');
+    Route::get('/{id}/edit', [Ventas::class, 'edit'])->name('ventas.edit');
+    Route::put('/{id}', [Ventas::class, 'update'])->name('ventas.update');
+    Route::delete('/{id}', [Ventas::class, 'destroy'])->name('ventas.destroy');
 }); 
 Route::prefix('detalles_ventas')->middleware('auth')->group(function () {
-    Route::get('/', [\App\Http\Controllers\DetallesVentas::class, 'index'])->name('detalles_ventas.index');
-    Route::get('/create', [\App\Http\Controllers\DetallesVentas::class, 'create'])->name('detalles_ventas.create');
-    Route::post('/', [\App\Http\Controllers\DetallesVentas::class, 'store'])->name('detalles_ventas.store');
-    Route::get('/{id}', [\App\Http\Controllers\DetallesVentas::class, 'show'])->name('detalles_ventas.show');
-    Route::get('/{id}/edit', [\App\Http\Controllers\DetallesVentas::class, 'edit'])->name('detalles_ventas.edit');
-    Route::put('/{id}', [\App\Http\Controllers\DetallesVentas::class, 'update'])->name('detalles_ventas.update');
-    Route::delete('/{id}', [\App\Http\Controllers\DetallesVentas::class, 'destroy'])->name('detalles_ventas.destroy');
+    Route::get('/', [DetallesVentas::class, 'index'])->name('detalles_ventas.index');
+    Route::get('/create', [DetallesVentas::class, 'create'])->name('detalles_ventas.create');
+    Route::post('/', [DetallesVentas::class, 'store'])->name('detalles_ventas.store');
+    Route::get('/{id}', [DetallesVentas::class, 'show'])->name('detalles_ventas.show');
+    Route::get('/{id}/edit', [DetallesVentas::class, 'edit'])->name('detalles_ventas.edit');
+    Route::put('/{id}', [DetallesVentas::class, 'update'])->name('detalles_ventas.update');
+    Route::delete('/{id}', [DetallesVentas::class, 'destroy'])->name('detalles_ventas.destroy');
 });
 
 Route::prefix('productos')->middleware('auth')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Productos::class, 'index'])->name('productos.index');
-    Route::get('/create', [\App\Http\Controllers\Productos::class, 'create'])->name('productos.create');
-    Route::post('/', [\App\Http\Controllers\Productos::class, 'store'])->name('productos.store');
-    Route::get('/{id}', [\App\Http\Controllers\Productos::class, 'show'])->name('productos.show');
-    Route::get('/{id}/edit', [\App\Http\Controllers\Productos::class, 'edit'])->name('productos.edit');
-    Route::put('/{id}', [\App\Http\Controllers\Productos::class, 'update'])->name('productos.update');
-    Route::delete('/{id}', [\App\Http\Controllers\Productos::class, 'destroy'])->name('productos.destroy');
+    Route::get('/', [Productos::class, 'index'])->name('productos.index');
+    Route::get('/create', [Productos::class, 'create'])->name('productos.create');
+    Route::post('/', [Productos::class, 'store'])->name('productos.store');
+    Route::get('/{id}', [Productos::class, 'show'])->name('productos.show');
+    Route::get('/{id}/edit', [Productos::class, 'edit'])->name('productos.edit');
+    Route::put('/{id}', [Productos::class, 'update'])->name('productos.update');
+    Route::delete('/{id}', [Productos::class, 'destroy'])->name('productos.destroy');
 });
 Route::prefix('usuarios')->middleware('auth')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Usuarios::class, 'index'])->name('usuarios.index');
-    Route::get('/create', [\App\Http\Controllers\Usuarios::class, 'create'])->name('usuarios.create');
-    Route::post('/', [\App\Http\Controllers\Usuarios::class, 'store'])->name('usuarios.store');
-    Route::get('/{id}', [\App\Http\Controllers\Usuarios::class, 'show'])->name('usuarios.show');
-    Route::get('/{id}/edit', [\App\Http\Controllers\Usuarios::class, 'edit'])->name('usuarios.edit');
-    Route::put('/{id}', [\App\Http\Controllers\Usuarios::class, 'update'])->name('usuarios.update');
-    Route::delete('/{id}', [\App\Http\Controllers\Usuarios::class, 'destroy'])->name('usuarios.destroy');
+    Route::get('/', [Usuarios::class, 'index'])->name('usuarios.index');
+    Route::get('/create', [Usuarios::class, 'create'])->name('usuarios.create');
+    Route::post('/', [Usuarios::class, 'store'])->name('usuarios.store');
+    Route::get('/{id}', [Usuarios::class, 'show'])->name('usuarios.show');
+    Route::get('/{id}/edit', [Usuarios::class, 'edit'])->name('usuarios.edit');
+    Route::put('/{id}', [Usuarios::class, 'update'])->name('usuarios.update');
+    Route::delete('/{id}', [Usuarios::class, 'destroy'])->name('usuarios.destroy');
 });
 
 Route::prefix('inventario')->middleware('auth')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Inventario::class, 'index'])->name('inventario.index');
-    Route::get('/create', [\App\Http\Controllers\Inventario::class, 'create'])->name('inventario.create');
-    Route::post('/', [\App\Http\Controllers\Inventario::class, 'store'])->name('inventario.store');
-    Route::get('/{id}', [\App\Http\Controllers\Inventario::class, 'show'])->name('inventario.show');
-    Route::get('/{id}/edit', [\App\Http\Controllers\Inventario::class, 'edit'])->name('inventario.edit');
-    Route::put('/{id}', [\App\Http\Controllers\Inventario::class, 'update'])->name('inventario.update');
-    Route::delete('/{id}', [\App\Http\Controllers\Inventario::class, 'destroy'])->name('inventario.destroy');
+    Route::get('/', [Inventario::class, 'index'])->name('inventario.index');
+    Route::get('/create', [Inventario::class, 'create'])->name('inventario.create');
+    Route::post('/', [Inventario::class, 'store'])->name('inventario.store');
+    Route::get('/{id}', [Inventario::class, 'show'])->name('inventario.show');
+    Route::get('/{id}/edit', [Inventario::class, 'edit'])->name('inventario.edit');
+    Route::put('/{id}', [Inventario::class, 'update'])->name('inventario.update');
+    Route::delete('/{id}', [Inventario::class, 'destroy'])->name('inventario.destroy');
 });
 
 Route::prefix('reportes')->middleware('auth')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Reportes::class, 'index'])->name('reportes.index');
-    Route::get('/ventas', [\App\Http\Controllers\Reportes::class, 'ventas'])->name('reportes.ventas');
-    Route::get('/clientes', [\App\Http\Controllers\Reportes::class, 'clientes'])->name('reportes.clientes');
-    Route::get('/productos', [\App\Http\Controllers\Reportes::class, 'productos'])->name('reportes.productos');
-    Route::get('/usuarios', [\App\Http\Controllers\Reportes::class, 'usuarios'])->name('reportes.usuarios');
-    Route::get('/inventario', [\App\Http\Controllers\Reportes::class, 'inventario'])->name('reportes.inventario');
-    Route::get('/recepciones', [\App\Http\Controllers\Reportes::class, 'recepciones'])->name('reportes.recepciones');
-    Route::get('/detalles_ventas', [\App\Http\Controllers\Reportes::class, 'detallesVentas'])->name('reportes.detalles_ventas');
-    Route::get('/export', [\App\Http\Controllers\Reportes::class, 'export'])->name('reportes.export');
-    Route::get('/{id}/pdf', [\App\Http\Controllers\Reportes::class, 'generatePdf'])->name('reportes.pdf');
-    Route::get('/{id}/excel', [\App\Http\Controllers\Reportes::class, 'generateExcel'])->name('reportes.excel');
-    Route::get('/{id}/print', [\App\Http\Controllers\Reportes::class, 'print'])->name('reportes.print');        
-    Route::get('/{id}/send-email', [\App\Http\Controllers\Reportes::class, 'sendEmail'])->name('reportes.send_email');
-    Route::get('/{id}/send-sms', [\App\Http\Controllers\Reportes::class, 'sendSms'])->name('reportes.send_sms');
+    Route::get('/', [Reportes::class, 'index'])->name('reportes.index');
+    Route::get('/ventas', [Reportes::class, 'ventas'])->name('reportes.ventas');
+    Route::get('/clientes', [Reportes::class, 'clientes'])->name('reportes.clientes');
+    Route::get('/productos', [Reportes::class, 'productos'])->name('reportes.productos');
+    Route::get('/usuarios', [Reportes::class, 'usuarios'])->name('reportes.usuarios');
+    Route::get('/inventario', [Reportes::class, 'inventario'])->name('reportes.inventario');
+    Route::get('/recepciones', [Reportes::class, 'recepciones'])->name('reportes.recepciones');
+    Route::get('/detalles_ventas', [Reportes::class, 'detallesVentas'])->name('reportes.detalles_ventas');
+    Route::get('/export', [Reportes::class, 'export'])->name('reportes.export');
+    Route::get('/{id}/pdf', [Reportes::class, 'generatePdf'])->name('reportes.pdf');
+    Route::get('/{id}/excel', [Reportes::class, 'generateExcel'])->name('reportes.excel');
+    Route::get('/{id}/print', [Reportes::class, 'print'])->name('reportes.print');        
+    Route::get('/{id}/send-email', [Reportes::class, 'sendEmail'])->name('reportes.send_email');
+    Route::get('/{id}/send-sms', [Reportes::class, 'sendSms'])->name('reportes.send_sms');
 });
 
 Route::prefix('cotizaciones')->middleware('auth')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Cotizaciones::class, 'index'])->name('cotizaciones.index');
-    Route::get('/create', [\App\Http\Controllers\Cotizaciones::class, 'create'])->name('cotizaciones.create');
-    Route::post('/', [\App\Http\Controllers\Cotizaciones::class, 'store'])->name('cotizaciones.store');
-    Route::get('/{id}', [\App\Http\Controllers\Cotizaciones::class, 'show'])->name('cotizaciones.show');
-    Route::get('/{id}/edit', [\App\Http\Controllers\Cotizaciones::class, 'edit'])->name('cotizaciones.edit');
-    Route::put('/{id}', [\App\Http\Controllers\Cotizaciones::class, 'update'])->name('cotizaciones.update');
-    Route::delete('/{id}', [\App\Http\Controllers\Cotizaciones::class, 'destroy'])->name('cotizaciones.destroy');
+    Route::get('/', [Cotizaciones::class, 'index'])->name('cotizaciones.index');
+    Route::get('/create', [Cotizaciones::class, 'create'])->name('cotizaciones.create');
+    Route::post('/', [Cotizaciones::class, 'store'])->name('cotizaciones.store');
+    Route::get('/{id}', [Cotizaciones::class, 'show'])->name('cotizaciones.show');
+    Route::get('/{id}/edit', [Cotizaciones::class, 'edit'])->name('cotizaciones.edit');
+    Route::put('/{id}', [Cotizaciones::class, 'update'])->name('cotizaciones.update');
+    Route::delete('/{id}', [Cotizaciones::class, 'destroy'])->name('cotizaciones.destroy');
 });

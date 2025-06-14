@@ -34,8 +34,7 @@
                         <option value="Gerente" {{ old('rol') == 'Gerente' ? 'selected' : '' }}>Gerente</option>
                         <option value="Contabilidad" {{ old('rol') == 'Contabilidad' ? 'selected' : '' }}>Contabilidad</option>
                         <option value="Supervisor" {{ old('rol') == 'Supervisor' || !old('rol') ? 'selected' : '' }}>Supervisor</option>
-                        <option value="Tecnico" {{ old('rol') == 'Tecnico' ? 'selected' : '' }}>Técnico</option>
-                        <option value="Recepcionista" {{ old('rol') == 'Recepcionista' ? 'selected' : '' }}>Recepcionista</option>
+                        
                     </select>
                     @error('rol')
                         <div class="invalid-feedback">{{ $message }}</div>

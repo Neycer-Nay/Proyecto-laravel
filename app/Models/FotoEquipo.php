@@ -27,5 +27,10 @@ class FotoEquipo extends Model
         return $this->belongsTo(Recepcion::class);
     }
 
+    public function FotoEquipo()
+    {
+        return $this->belongsTo(FotoEquipo::class);
+    }
+
     
 }
