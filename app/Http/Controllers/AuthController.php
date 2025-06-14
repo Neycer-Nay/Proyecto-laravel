@@ -38,16 +38,23 @@ class AuthController extends Controller
 
     public function crearAdmin()
     {
-        User::create([
-            'nombre' => 'Neycer',
-            'email' => 'Admin@gmail.com',
-            'password' => Hash::make('Admin1234'),
-            'activo' => true,
-            'rol' => 'Gerente',
-           
-        ]);
-        return "Usuario administrador creado exitosamente.";
+        $usuario = User::where('email', 'Admin@gmail.com')->first();
+
+        if (!$usuario) {
+            User::create([
+                'nombre' => 'Neycer',
+                'email' => 'Admin@gmail.com',
+                'password' => Hash::make('Admin1234'),
+                'activo' => true,
+                'rol' => 'Gerente',
+            ]);
+
+            return "Usuario administrador creado exitosamente.";
+        }
+
+        return "El usuario administrador ya existe. No es necesario crearlo nuevamente.";
     }
+
 
     public function logout()
     {

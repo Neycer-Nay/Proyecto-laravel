@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
+            $table->string('nombre')->unique();
             $table->enum('tipo', ['Empresa', 'Persona']);
             $table->enum('tipo_documento', ['CI', 'NIT', 'Pasaporte', 'Otro'])->nullable();
             $table->string('documento', 50)->nullable();
             $table->string('telefono', 50);
-            $table->string('email')->nullable();
+            $table->string('email')->unique();
             $table->text('direccion')->nullable();
             $table->string('ciudad', 100)->default('Santa Cruz');
             $table->string('pais', 100)->default('Bolivia');
