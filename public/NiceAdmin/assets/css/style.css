@@ -15,17 +15,17 @@
 
 body {
   font-family: "Open Sans", sans-serif;
-  background: #f6f9ff;
+  background: #f9faff;
   color: #444444;
 }
 
 a {
-  color: #4154f1;
+  color: #f9faff;
   text-decoration: none;
 }
 
 a:hover {
-  color: #717ff5;
+  color: #ebebed;
   text-decoration: none;
 }
 

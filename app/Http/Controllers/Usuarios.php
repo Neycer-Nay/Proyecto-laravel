@@ -96,8 +96,40 @@ class Usuarios extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    /**
+ * Remove the specified resource from storage.
+ */
     public function destroy(string $id)
     {
-        //
+        try {
+            // Buscar el usuario
+            $user = User::findOrFail($id);
+            
+            // Opcional: Evitar que un usuario se elimine a sí mismo
+            if (Auth::id() == $user->id) {
+                return redirect()->route('usuarios.index')
+                    ->with('error', 'No puedes eliminar tu propio usuario');
+            }
+            
+            // Eliminar el usuario
+            $user->delete();
+            
+            return redirect()->route('usuarios.index')
+                ->with('success', 'Usuario eliminado correctamente');
+                
+        } catch (\Exception $e) {
+            return redirect()->route('usuarios.index')
+                ->with('error', 'Error al eliminar el usuario: ' . $e->getMessage());
+        }
+    }
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (auth()->user()->rol !== 'Gerente') {
+                abort(403, 'No tienes permiso para acceder a esta sección.');
+            }
+            return $next($request);
+        });
     }
 }

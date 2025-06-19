@@ -1,6 +1,6 @@
 
 @extends('layouts.main')
-@section('titulo', '$titulo')
+@section('titulo', 'titulo')
 
 @section('contenido')
 <main id="main" class="main">
@@ -56,7 +56,7 @@
                         <form action="{{ route('usuarios.destroy', $user->id) }}" method="POST" style="display: inline-block;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">
+                            <button type="submit" class="btn btn-sm btn-danger delete-btn" data-name="{{ $user->nombre ?? 'usuario' }}">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
@@ -72,4 +72,30 @@
     </div>
 </div>
 </main>
+@push('scripts')
+<script>
+document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const form = this.closest('form');
+        const userName = this.getAttribute('data-name');
+        
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: `Vas a eliminar a ${userName}. Esta acción no se puede deshacer.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+@endpush
 @endsection

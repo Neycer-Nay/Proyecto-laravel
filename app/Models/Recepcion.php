@@ -34,7 +34,7 @@ class Recepcion extends Model
     protected $casts = [
         'registro_fotografico' => 'boolean',
         'entregado_con_boleta' => 'boolean',
-        'fecha_recepcion' => 'date',
+        'fecha_recepcion' => 'date:d/m/Y',
         'fecha_limite_retiro' => 'date',
         'fecha_entrega' => 'datetime',
     ];
@@ -55,7 +55,7 @@ class Recepcion extends Model
     }
     public function fotos()
     {
-        return $this->hasMany(Foto::class);
+        return $this->hasMany(FotoEquipo::class);
     }
     
 }

@@ -38,10 +38,7 @@ class Equipo extends Model
         return $this->belongsTo(Recepcion::class, 'recepciones_id');
     }
 
-    public function proveedor()
-    {
-        return $this->belongsTo(Proveedor::class, 'proveedores_id');
-    }
+   
 
     public function fotos()
     {

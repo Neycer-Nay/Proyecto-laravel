@@ -52,7 +52,7 @@ class ClienteController extends Controller
     {
         
         $clientes = Cliente::all();
-    return response()->json($clientes);
+        return response()->json($clientes);
     }
 
 
@@ -77,6 +77,6 @@ class ClienteController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        
     }
 }

@@ -152,9 +152,11 @@ class RecepcionController extends Controller
      */
     protected function guardarFoto(Equipo $equipo, $foto)
     {
-        $path = $foto->store('public/equipos');
+        
+        $path = $foto->store('equipos', 'public'); // <-- ¡Corrección clave!
+        
         $equipo->fotos()->create([
-            'ruta' => Storage::url($path),
+            'ruta' => $path, // Guarda solo la ruta relativa (ej: "equipos/abc123.jpg")
             'descripcion' => 'Foto del equipo ' . $equipo->nombre,
             'tipo' => 'uploaded'
         ]);
@@ -198,17 +200,15 @@ class RecepcionController extends Controller
         ]);
     }
 
-    public function show(Recepcion $recepcion)
+    
+    public function show($id)
     {
-        $recepcion->load(['cliente', 'encargado', 'equipos.fotos']);
+        $recepcion = Recepcion::with(['cliente', 'encargado', 'equipos.fotos'])->findOrFail($id);
         return view('modules.recepcion.show', compact('recepcion'));
     }
 
     public function generarPDF(Recepcion $recepcion)
     {
-        $recepcion->load(['cliente', 'encargado', 'equipos.fotos']);
-
-        $pdf = Pdf::loadView('modules.recepcion.pdf', compact('recepcion'));
-        return $pdf->download('recepcion_'.$recepcion->numero_recepcion.'.pdf');
+        
     }
 }
